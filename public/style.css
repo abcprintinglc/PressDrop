@@ -65,3 +65,13 @@ input, textarea {
     cursor: pointer;
 }
 #submit-btn:hover { background: #218838; }
+
+.ai-summary {
+    margin-top: 12px;
+    padding: 10px;
+    background: #f0f4ff;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #2a3b64;
+    white-space: pre-wrap;
+}

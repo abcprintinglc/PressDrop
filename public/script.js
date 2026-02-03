@@ -1,5 +1,6 @@
 const dropArea = document.getElementById('drop-area');
 const gallery = document.getElementById('gallery');
+const aiSummary = document.getElementById('ai-summary');
 let filesToUpload = [];
 
 // Prevent default drag behaviors
@@ -62,11 +63,17 @@ document.getElementById('uploadForm').addEventListener('submit', (e) => {
     .then(data => {
         document.getElementById('status').innerText = data.message;
         document.getElementById('status').style.color = 'green';
+        if (data.aiSummary) {
+            aiSummary.innerText = `Gemini summary:\n${data.aiSummary}`;
+        } else {
+            aiSummary.innerText = '';
+        }
         filesToUpload = []; // Clear files
         updateGallery();
     })
     .catch(() => { 
         document.getElementById('status').innerText = "Upload failed.";
         document.getElementById('status').style.color = 'red';
+        aiSummary.innerText = '';
     });
 });

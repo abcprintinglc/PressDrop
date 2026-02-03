@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PressDrop for Photoshop</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="panel">
+    <header>
+      <h1>PressDrop</h1>
+      <p>Send your Photoshop artwork to ABC Printing.</p>
+    </header>
+
+    <section class="card">
+      <label class="label" for="serverUrl">Upload URL</label>
+      <input id="serverUrl" type="url" value="http://localhost:3000/upload" />
+
+      <div class="row">
+        <div class="field">
+          <label class="label" for="name">Name</label>
+          <input id="name" type="text" placeholder="Your name" required />
+        </div>
+        <div class="field">
+          <label class="label" for="email">Email</label>
+          <input id="email" type="email" placeholder="you@example.com" required />
+        </div>
+      </div>
+
+      <label class="label" for="notes">Job Notes</label>
+      <textarea id="notes" rows="3" placeholder="Quantity, paper type, deadline..."></textarea>
+    </section>
+
+    <section class="card">
+      <h2>Files to Upload</h2>
+      <div class="button-row">
+        <button id="addDoc" class="primary">Add Current Document</button>
+        <button id="addFiles" class="secondary">Browse Files</button>
+      </div>
+      <ul id="fileList" class="file-list"></ul>
+    </section>
+
+    <button id="uploadBtn" class="primary full">Send Files</button>
+    <p id="status" class="status"></p>
+  </main>
+
+  <script src="main.js"></script>
+</body>
+</html>
