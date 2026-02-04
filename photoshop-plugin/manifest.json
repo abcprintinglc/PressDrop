@@ -1,0 +1,26 @@
+{
+  "manifestVersion": 5,
+  "id": "com.abcprinting.pressdrop",
+  "name": "PressDrop for Photoshop",
+  "version": "1.0.0",
+  "host": {
+    "app": "PS",
+    "minVersion": "22.0.0"
+  },
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "pressdropPanel",
+      "label": "PressDrop",
+      "minimumSize": {
+        "width": 320,
+        "height": 420
+      },
+      "preferredDockedSize": {
+        "width": 360,
+        "height": 520
+      },
+      "mainPath": "index.html"
+    }
+  ]
+}
