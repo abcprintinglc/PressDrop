@@ -1,10 +1,13 @@
-import { app, core, imaging } from "photoshop";
+const { app, core, imaging } = require("photoshop");
 
-const statusEl = document.getElementById("status");
-const runButton = document.getElementById("runBleed");
+const statusEl = () => document.getElementById("status");
+const runButton = () => document.getElementById("runBleed");
 
 const setStatus = (message) => {
-  statusEl.textContent = message;
+  const status = statusEl();
+  if (status) {
+    status.textContent = message;
+  }
 };
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
@@ -218,7 +221,7 @@ const runBleed = async () => {
     return;
   }
 
-  runButton.disabled = true;
+  runButton().disabled = true;
   setStatus("Processing bleed...");
 
   try {
@@ -239,8 +242,13 @@ const runBleed = async () => {
     console.error(error);
     setStatus(`Bleed failed: ${error.message}`);
   } finally {
-    runButton.disabled = false;
+    runButton().disabled = false;
   }
 };
 
-runButton.addEventListener("click", runBleed);
+document.addEventListener("DOMContentLoaded", () => {
+  const button = runButton();
+  if (button) {
+    button.addEventListener("click", runBleed);
+  }
+});
