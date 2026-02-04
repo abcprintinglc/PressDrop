@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PressDrop Standalone Bleed Generator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="titlebar">
+        <h1>PressDrop Standalone</h1>
+        <p>Extend artwork with Gemini AI (banana nano) to generate printable bleed.</p>
+      </header>
+
+      <section class="panel">
+        <div class="field-row">
+          <span class="field-label">Artwork (PNG/JPG):</span>
+          <div class="field-input">
+            <input id="imageName" type="text" placeholder="Choose image file..." readonly />
+          </div>
+          <button class="button button-secondary" id="browseButton" type="button">Browse</button>
+          <input id="imageInput" type="file" accept="image/png,image/jpeg" hidden />
+        </div>
+
+        <div class="field-row">
+          <span class="field-label">Gemini API key:</span>
+          <div class="field-input">
+            <input id="apiKey" type="password" placeholder="AIza..." />
+            <small class="field-hint">Stored locally in your browser after first run.</small>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <span class="field-label">Bleed size (px):</span>
+          <div class="field-input">
+            <input id="bleedSize" type="number" min="8" max="600" value="128" />
+          </div>
+        </div>
+
+        <div class="field-row">
+          <span class="field-label">Prompt hint:</span>
+          <div class="field-input">
+            <input id="prompt" type="text" placeholder="e.g. Continue the sky and trees" />
+          </div>
+        </div>
+
+        <div class="field-row status-row">
+          <p id="status" class="status" role="status"></p>
+          <button id="generateButton" class="button">Generate bleed</button>
+        </div>
+      </section>
+
+      <section class="preview">
+        <div class="preview-card">
+          <h2>Original</h2>
+          <img id="originalPreview" alt="Original upload preview" />
+        </div>
+        <div class="preview-card">
+          <h2>Generated bleed</h2>
+          <img id="generatedPreview" alt="Generated bleed preview" />
+          <a id="downloadLink" class="download" download="pressdrop-bleed.png">Download PNG</a>
+        </div>
+      </section>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
