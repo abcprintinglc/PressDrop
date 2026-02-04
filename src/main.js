@@ -73,9 +73,11 @@ const decodeBase64ToUint8 = (base64) => {
   return bytes;
 };
 
+const geminiModel = "gemini-2.0-flash";
+
 const fetchGeminiBleed = async ({ apiKey, prompt, imageBase64, mimeType }) => {
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${apiKey}`,
     {
       method: "POST",
       headers: {
@@ -98,7 +100,6 @@ const fetchGeminiBleed = async ({ apiKey, prompt, imageBase64, mimeType }) => {
         ],
         generationConfig: {
           temperature: 0.6,
-          responseMimeType: "image/png",
         },
       }),
     }
