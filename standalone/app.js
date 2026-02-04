@@ -1,10 +1,10 @@
 const apiKeyInput = document.getElementById("apiKey");
 const bleedSizeInput = document.getElementById("bleedSize");
-const promptInput = document.getElementById("prompt");
 const imageInput = document.getElementById("imageInput");
 const imageNameInput = document.getElementById("imageName");
 const browseButton = document.getElementById("browseButton");
 const generateButton = document.getElementById("generateButton");
+const bleedModeSelect = document.getElementById("bleedMode");
 const statusEl = document.getElementById("status");
 const originalPreview = document.getElementById("originalPreview");
 const generatedPreview = document.getElementById("generatedPreview");
@@ -48,7 +48,6 @@ const fetchGeminiBleed = async ({ apiKey, prompt, imageBase64, mimeType }) => {
         ],
         generationConfig: {
           temperature: 0.6,
-          responseMimeType: "image/png",
         },
       }),
     }
@@ -78,7 +77,7 @@ const fetchGeminiBleed = async ({ apiKey, prompt, imageBase64, mimeType }) => {
 const handleGenerate = async () => {
   const apiKey = apiKeyInput.value.trim();
   const bleed = Number.parseInt(bleedSizeInput.value, 10);
-  const promptHint = promptInput.value.trim();
+  const mode = bleedModeSelect.value;
   const file = imageInput.files?.[0];
 
   if (!apiKey) {
@@ -86,8 +85,18 @@ const handleGenerate = async () => {
     return;
   }
 
+  if (mode !== "ai") {
+    setStatus("Mirror and smear modes are not available in the standalone app yet.");
+    return;
+  }
+
   if (!file) {
     setStatus("Upload an image to extend.");
+    return;
+  }
+
+  if (file.type === "application/pdf") {
+    setStatus("PDF input is not supported in the standalone app yet.");
     return;
   }
 
@@ -113,7 +122,7 @@ const handleGenerate = async () => {
     const mimeMatch = /data:(.*?);base64/.exec(header);
     const mimeType = mimeMatch ? mimeMatch[1] : "image/png";
 
-    const prompt = `${promptHint || "Extend the image beyond its edges."} Provide an expanded canvas with ${bleed}px bleed on all sides.`;
+    const prompt = `Extend the image beyond its edges. Provide an expanded canvas with ${bleed}px bleed on all sides.`;
 
     const generatedBase64 = await fetchGeminiBleed({
       apiKey,
