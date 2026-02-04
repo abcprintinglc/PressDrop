@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PressDrop Standalone Bleed Generator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="titlebar">
+        <h1>PressDrop Standalone</h1>
+        <p>Extend artwork with Gemini AI (banana nano) to generate printable bleed.</p>
+      </header>
+
+      <section class="panel">
+        <div class="field-row">
+          <span class="field-label">Input (PDF/PNG/JPG):</span>
+          <div class="field-input">
+            <input id="imageName" type="text" placeholder="Choose image file..." readonly />
+          </div>
+          <button class="button button-secondary" id="browseButton" type="button">Browse</button>
+          <input id="imageInput" type="file" accept="image/png,image/jpeg,application/pdf" hidden />
+        </div>
+
+        <div class="field-row">
+          <span class="field-label">Output Folder:</span>
+          <div class="field-input">
+            <input id="outputFolder" type="text" value="Downloads" />
+          </div>
+          <button class="button button-secondary" type="button">Browse</button>
+        </div>
+
+        <div class="field-row no-action">
+          <span class="field-label">Preset:</span>
+          <div class="field-input">
+            <select id="preset">
+              <option>(custom)</option>
+              <option>US Letter</option>
+              <option>US Tabloid</option>
+              <option>A4</option>
+              <option>A3</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row no-action">
+          <span class="field-label">Trim Size WxH:</span>
+          <div class="field-input">
+            <input id="trimSize" type="text" value="4x6in" />
+          </div>
+        </div>
+
+        <div class="field-row no-action">
+          <span class="field-label">Bleed (px):</span>
+          <div class="field-input">
+            <input id="bleedSize" type="number" min="8" max="600" value="128" />
+          </div>
+        </div>
+
+        <div class="field-row no-action">
+          <span class="field-label">Pages:</span>
+          <div class="field-input">
+            <input id="pages" type="text" value="all" />
+          </div>
+        </div>
+
+        <div class="field-row no-action">
+          <span class="field-label">Fit mode:</span>
+          <div class="field-input">
+            <select id="fitMode">
+              <option>fit_trim_proportional</option>
+              <option>fit_trim_fill</option>
+              <option>fit_trim_center</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row no-action">
+          <span class="field-label">Anchor (Fill/Crop):</span>
+          <div class="field-input">
+            <select id="anchor">
+              <option>center</option>
+              <option>top_left</option>
+              <option>top_right</option>
+              <option>bottom_left</option>
+              <option>bottom_right</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row no-action">
+          <span class="field-label">Bleed Generator:</span>
+          <div class="field-input">
+            <select id="bleedMode">
+              <option value="ai">Gemini AI (banana nano)</option>
+              <option value="mirror">mirror</option>
+              <option value="smear">smear</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row no-action">
+          <span class="field-label">Gemini API key:</span>
+          <div class="field-input">
+            <input id="apiKey" type="password" placeholder="AIza..." />
+            <small class="field-hint">Stored locally in your browser after first run.</small>
+          </div>
+        </div>
+
+        <div class="checkbox-row">
+          <label><input id="cropMarks" type="checkbox" checked /> Add crop marks</label>
+          <label><input id="jobTicket" type="checkbox" /> Also create an INDD job ticket</label>
+        </div>
+
+        <div class="field-row status-row">
+          <p id="status" class="status" role="status"></p>
+          <button id="generateButton" class="button">Run</button>
+        </div>
+      </section>
+
+      <section class="preview">
+        <div class="preview-card">
+          <h2>Original</h2>
+          <img id="originalPreview" alt="Original upload preview" />
+        </div>
+        <div class="preview-card">
+          <h2>Generated bleed</h2>
+          <img id="generatedPreview" alt="Generated bleed preview" />
+          <a id="downloadLink" class="download" download="pressdrop-bleed.png">Download PNG</a>
+        </div>
+      </section>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
