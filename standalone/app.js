@@ -5,11 +5,13 @@ const imageNameInput = document.getElementById("imageName");
 const browseButton = document.getElementById("browseButton");
 const generateButton = document.getElementById("generateButton");
 const bleedModeSelect = document.getElementById("bleedMode");
+const geminiModelSelect = document.getElementById("geminiModel");
 const statusEl = document.getElementById("status");
 const originalPreview = document.getElementById("originalPreview");
 const generatedPreview = document.getElementById("generatedPreview");
 const downloadLink = document.getElementById("downloadLink");
 const storedKey = "pressdrop.gemini.apiKey";
+const storedModelKey = "pressdrop.gemini.model";
 
 const setStatus = (message) => {
   statusEl.textContent = message;
@@ -85,9 +87,15 @@ const loadImage = (dataUrl) =>
     image.src = dataUrl;
   });
 
-const fetchGeminiBleed = async ({ apiKey, prompt, imageBase64, mimeType }) => {
+const fetchGeminiBleed = async ({
+  apiKey,
+  prompt,
+  imageBase64,
+  mimeType,
+  model,
+}) => {
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
     {
       method: "POST",
       headers: {
@@ -174,6 +182,7 @@ const handleGenerate = async () => {
   const apiKey = apiKeyInput.value.trim();
   const bleed = Number.parseInt(bleedSizeInput.value, 10);
   const mode = bleedModeSelect.value;
+  const model = geminiModelSelect.value;
   const file = imageInput.files?.[0];
 
   if (!apiKey) {
@@ -206,6 +215,7 @@ const handleGenerate = async () => {
 
   try {
     localStorage.setItem(storedKey, apiKey);
+    localStorage.setItem(storedModelKey, model);
     const dataUrl = await readFileAsDataUrl(file);
     originalPreview.src = dataUrl;
 
@@ -223,6 +233,7 @@ const handleGenerate = async () => {
         prompt,
         imageBase64: base64,
         mimeType,
+        model,
       });
 
       if (!generatedBase64) {
@@ -269,5 +280,9 @@ window.addEventListener("DOMContentLoaded", () => {
   const cachedKey = localStorage.getItem(storedKey);
   if (cachedKey) {
     apiKeyInput.value = cachedKey;
+  }
+  const cachedModel = localStorage.getItem(storedModelKey);
+  if (cachedModel) {
+    geminiModelSelect.value = cachedModel;
   }
 });
