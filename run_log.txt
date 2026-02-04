@@ -2,7 +2,9 @@
 PressDrop Standalone Launcher 
 =============================== 
 Python 3.14.2
-::1 - - [03/Feb/2026 23:36:44] "GET /standalone/index.html HTTP/1.1" 304 -
-::ffff:127.0.0.1 - - [03/Feb/2026 23:36:44] "GET /standalone/styles.css HTTP/1.1" 304 -
-::ffff:127.0.0.1 - - [03/Feb/2026 23:36:44] "GET /standalone/app.js HTTP/1.1" 200 -
+::1 - - [04/Feb/2026 00:30:10] "GET /standalone/index.html HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [04/Feb/2026 00:30:10] "GET /standalone/app.js HTTP/1.1" 304 -
+::ffff:127.0.0.1 - - [04/Feb/2026 00:30:10] "GET /standalone/styles.css HTTP/1.1" 304 -
+::1 - - [04/Feb/2026 00:32:34] code 404, message File not found
+::1 - - [04/Feb/2026 00:32:34] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
 ^C
