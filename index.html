@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PressDrop Generative Bleed</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <div class="panel">
+      <header>
+        <h1>Generative Bleed</h1>
+        <p>Extend artwork beyond the canvas edge with Gemini AI or fast local modes.</p>
+      </header>
+
+      <section class="controls">
+        <label class="stack">
+          <span>Gemini API key (free tier)</span>
+          <input id="apiKey" type="password" placeholder="AIza..." />
+        </label>
+
+        <label class="stack">
+          <span>Bleed size (px)</span>
+          <input id="bleedSize" type="number" min="8" max="800" value="128" />
+        </label>
+
+        <label class="stack">
+          <span>Mode</span>
+          <select id="mode">
+            <option value="ai">Gemini AI (banana nano)</option>
+            <option value="mirror">Mirror edge</option>
+            <option value="smear">Smear colors</option>
+          </select>
+        </label>
+
+        <label class="stack">
+          <span>Prompt hint (optional)</span>
+          <textarea id="prompt" rows="3" placeholder="e.g. Continue the sky and clouds"></textarea>
+        </label>
+
+        <button id="runBleed">Generate bleed</button>
+        <p id="status" class="status" role="status"></p>
+      </section>
+
+      <section class="help">
+        <h2>How it works</h2>
+        <ol>
+          <li>Canvas is extended by the bleed size.</li>
+          <li>Gemini AI generates missing imagery, or you can mirror/smear edges locally.</li>
+        </ol>
+      </section>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
