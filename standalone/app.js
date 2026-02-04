@@ -240,7 +240,9 @@ const handleGenerate = async () => {
       });
 
       if (!generatedBase64) {
-        throw new Error("Gemini did not return image data.");
+        throw new Error(
+          "Gemini did not return image data. Try a smaller image, a different model, or use mirror/smear mode."
+        );
       }
 
       outputDataUrl = `data:image/png;base64,${generatedBase64}`;
