@@ -15,6 +15,60 @@ const setStatus = (message) => {
   statusEl.textContent = message;
 };
 
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+const reflect = (value, max) => {
+  if (value < 0) {
+    return -value - 1;
+  }
+  if (value > max) {
+    return max - (value - max) + 1;
+  }
+  return value;
+};
+
+const createBleedPixels = ({
+  originalData,
+  width,
+  height,
+  bleed,
+  mode,
+  targetWidth,
+  targetHeight,
+}) => {
+  const result = new Uint8ClampedArray(targetWidth * targetHeight * 4);
+
+  for (let y = 0; y < targetHeight; y += 1) {
+    for (let x = 0; x < targetWidth; x += 1) {
+      const srcX = x - bleed;
+      const srcY = y - bleed;
+
+      let sourceX = srcX;
+      let sourceY = srcY;
+
+      if (srcX < 0 || srcX >= width || srcY < 0 || srcY >= height) {
+        if (mode === "mirror") {
+          sourceX = reflect(srcX, width - 1);
+          sourceY = reflect(srcY, height - 1);
+        } else {
+          sourceX = clamp(srcX, 0, width - 1);
+          sourceY = clamp(srcY, 0, height - 1);
+        }
+      }
+
+      const srcIndex = (sourceY * width + sourceX) * 4;
+      const destIndex = (y * targetWidth + x) * 4;
+
+      result[destIndex] = originalData[srcIndex];
+      result[destIndex + 1] = originalData[srcIndex + 1];
+      result[destIndex + 2] = originalData[srcIndex + 2];
+      result[destIndex + 3] = originalData[srcIndex + 3];
+    }
+  }
+
+  return result;
+};
+
 const readFileAsDataUrl = (file) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -23,9 +77,17 @@ const readFileAsDataUrl = (file) =>
     reader.readAsDataURL(file);
   });
 
+const loadImage = (dataUrl) =>
+  new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = dataUrl;
+  });
+
 const fetchGeminiBleed = async ({ apiKey, prompt, imageBase64, mimeType }) => {
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,
     {
       method: "POST",
       headers: {
@@ -74,6 +136,40 @@ const fetchGeminiBleed = async ({ apiKey, prompt, imageBase64, mimeType }) => {
   return part?.inlineData?.data ?? null;
 };
 
+const generateLocalBleed = async ({ dataUrl, bleed, mode }) => {
+  const image = await loadImage(dataUrl);
+  const width = image.naturalWidth;
+  const height = image.naturalHeight;
+  const targetWidth = width + bleed * 2;
+  const targetHeight = height + bleed * 2;
+
+  const sourceCanvas = document.createElement("canvas");
+  sourceCanvas.width = width;
+  sourceCanvas.height = height;
+  const sourceContext = sourceCanvas.getContext("2d");
+  sourceContext.drawImage(image, 0, 0);
+  const sourceData = sourceContext.getImageData(0, 0, width, height);
+
+  const newPixels = createBleedPixels({
+    originalData: sourceData.data,
+    width,
+    height,
+    bleed,
+    mode,
+    targetWidth,
+    targetHeight,
+  });
+
+  const outputCanvas = document.createElement("canvas");
+  outputCanvas.width = targetWidth;
+  outputCanvas.height = targetHeight;
+  const outputContext = outputCanvas.getContext("2d");
+  const outputImageData = new ImageData(newPixels, targetWidth, targetHeight);
+  outputContext.putImageData(outputImageData, 0, 0);
+
+  return outputCanvas.toDataURL("image/png");
+};
+
 const handleGenerate = async () => {
   const apiKey = apiKeyInput.value.trim();
   const bleed = Number.parseInt(bleedSizeInput.value, 10);
@@ -82,11 +178,6 @@ const handleGenerate = async () => {
 
   if (!apiKey) {
     setStatus("Enter your Gemini API key.");
-    return;
-  }
-
-  if (mode !== "ai") {
-    setStatus("Mirror and smear modes are not available in the standalone app yet.");
     return;
   }
 
@@ -111,7 +202,7 @@ const handleGenerate = async () => {
   }
 
   generateButton.disabled = true;
-  setStatus("Sending image to Gemini...");
+  setStatus(mode === "ai" ? "Sending image to Gemini..." : "Generating local bleed...");
 
   try {
     localStorage.setItem(storedKey, apiKey);
@@ -122,20 +213,27 @@ const handleGenerate = async () => {
     const mimeMatch = /data:(.*?);base64/.exec(header);
     const mimeType = mimeMatch ? mimeMatch[1] : "image/png";
 
-    const prompt = `Extend the image beyond its edges. Provide an expanded canvas with ${bleed}px bleed on all sides.`;
+    let outputDataUrl = "";
 
-    const generatedBase64 = await fetchGeminiBleed({
-      apiKey,
-      prompt,
-      imageBase64: base64,
-      mimeType,
-    });
+    if (mode === "ai") {
+      const prompt = `Extend the image beyond its edges. Provide an expanded canvas with ${bleed}px bleed on all sides.`;
 
-    if (!generatedBase64) {
-      throw new Error("Gemini did not return image data.");
+      const generatedBase64 = await fetchGeminiBleed({
+        apiKey,
+        prompt,
+        imageBase64: base64,
+        mimeType,
+      });
+
+      if (!generatedBase64) {
+        throw new Error("Gemini did not return image data.");
+      }
+
+      outputDataUrl = `data:image/png;base64,${generatedBase64}`;
+    } else {
+      outputDataUrl = await generateLocalBleed({ dataUrl, bleed, mode });
     }
 
-    const outputDataUrl = `data:image/png;base64,${generatedBase64}`;
     generatedPreview.src = outputDataUrl;
     downloadLink.href = outputDataUrl;
     downloadLink.classList.add("visible");
