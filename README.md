@@ -4,7 +4,7 @@ A Photoshop UXP panel that extends artwork beyond the canvas edge using Gemini A
 
 ## Features
 
-- **Gemini AI (banana nano)**: Sends the image to Gemini 1.5 Flash 8B and requests a larger canvas with generated bleed.
+- **Gemini AI (banana nano)**: Sends the image to Gemini 1.5 Flash and requests a larger canvas with generated bleed.
 - **Mirror edge**: Reflects the edge pixels outward (UXP panel only).
 - **Smear colors**: Clamps edge pixels outward to create a soft smear (UXP panel only).
 - **Standalone web app**: Upload an image and download the extended bleed in your browser.
@@ -24,7 +24,7 @@ A Photoshop UXP panel that extends artwork beyond the canvas edge using Gemini A
 
 ## Notes
 
-- Gemini AI uses the `gemini-1.5-flash-8b` model for low-cost, free-tier-friendly generations.
+- Gemini AI uses the `gemini-1.5-flash` model for low-cost, free-tier-friendly generations.
 - For AI mode, keep images reasonably sized for faster requests.
 - Local mirror/smear modes operate directly on pixels in the active document.
 
