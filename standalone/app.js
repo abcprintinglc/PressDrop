@@ -2,11 +2,14 @@ const apiKeyInput = document.getElementById("apiKey");
 const bleedSizeInput = document.getElementById("bleedSize");
 const promptInput = document.getElementById("prompt");
 const imageInput = document.getElementById("imageInput");
+const imageNameInput = document.getElementById("imageName");
+const browseButton = document.getElementById("browseButton");
 const generateButton = document.getElementById("generateButton");
 const statusEl = document.getElementById("status");
 const originalPreview = document.getElementById("originalPreview");
 const generatedPreview = document.getElementById("generatedPreview");
 const downloadLink = document.getElementById("downloadLink");
+const storedKey = "pressdrop.gemini.apiKey";
 
 const setStatus = (message) => {
   statusEl.textContent = message;
@@ -52,7 +55,16 @@ const fetchGeminiBleed = async ({ apiKey, prompt, imageBase64, mimeType }) => {
   );
 
   if (!response.ok) {
-    throw new Error(`Gemini request failed: ${response.status}`);
+    let errorMessage = `Gemini request failed: ${response.status}`;
+    try {
+      const errorPayload = await response.json();
+      if (errorPayload.error?.message) {
+        errorMessage = `Gemini request failed: ${errorPayload.error.message}`;
+      }
+    } catch (error) {
+      console.warn("Failed to parse Gemini error payload", error);
+    }
+    throw new Error(errorMessage);
   }
 
   const payload = await response.json();
@@ -79,6 +91,11 @@ const handleGenerate = async () => {
     return;
   }
 
+  if (!["image/png", "image/jpeg"].includes(file.type)) {
+    setStatus("Only PNG or JPG images are supported.");
+    return;
+  }
+
   if (!Number.isFinite(bleed) || bleed <= 0) {
     setStatus("Enter a valid bleed size.");
     return;
@@ -88,6 +105,7 @@ const handleGenerate = async () => {
   setStatus("Sending image to Gemini...");
 
   try {
+    localStorage.setItem(storedKey, apiKey);
     const dataUrl = await readFileAsDataUrl(file);
     originalPreview.src = dataUrl;
 
@@ -124,12 +142,25 @@ const handleGenerate = async () => {
 imageInput.addEventListener("change", async () => {
   const file = imageInput.files?.[0];
   if (!file) {
+    imageNameInput.value = "";
     originalPreview.removeAttribute("src");
     return;
   }
 
   const dataUrl = await readFileAsDataUrl(file);
+  imageNameInput.value = file.name;
   originalPreview.src = dataUrl;
 });
 
+browseButton.addEventListener("click", () => {
+  imageInput.click();
+});
+
 generateButton.addEventListener("click", handleGenerate);
+
+window.addEventListener("DOMContentLoaded", () => {
+  const cachedKey = localStorage.getItem(storedKey);
+  if (cachedKey) {
+    apiKeyInput.value = cachedKey;
+  }
+});

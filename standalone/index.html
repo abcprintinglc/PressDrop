@@ -8,55 +8,59 @@
   </head>
   <body>
     <div class="app">
-      <header>
+      <header class="titlebar">
         <h1>PressDrop Standalone</h1>
         <p>Extend artwork with Gemini AI (banana nano) to generate printable bleed.</p>
       </header>
 
       <section class="panel">
-        <label class="stack">
-          <span>Gemini API key</span>
-          <input id="apiKey" type="password" placeholder="AIza..." />
-        </label>
+        <div class="field-row">
+          <span class="field-label">Artwork (PNG/JPG):</span>
+          <div class="field-input">
+            <input id="imageName" type="text" placeholder="Choose image file..." readonly />
+          </div>
+          <button class="button button-secondary" id="browseButton" type="button">Browse</button>
+          <input id="imageInput" type="file" accept="image/png,image/jpeg" hidden />
+        </div>
 
-        <label class="stack">
-          <span>Bleed size (px)</span>
-          <input id="bleedSize" type="number" min="8" max="600" value="128" />
-        </label>
+        <div class="field-row">
+          <span class="field-label">Gemini API key:</span>
+          <div class="field-input">
+            <input id="apiKey" type="password" placeholder="AIza..." />
+            <small class="field-hint">Stored locally in your browser after first run.</small>
+          </div>
+        </div>
 
-        <label class="stack">
-          <span>Prompt hint (optional)</span>
-          <textarea id="prompt" rows="3" placeholder="e.g. Continue the sky and trees"></textarea>
-        </label>
+        <div class="field-row">
+          <span class="field-label">Bleed size (px):</span>
+          <div class="field-input">
+            <input id="bleedSize" type="number" min="8" max="600" value="128" />
+          </div>
+        </div>
 
-        <label class="stack">
-          <span>Artwork image</span>
-          <input id="imageInput" type="file" accept="image/*" />
-        </label>
+        <div class="field-row">
+          <span class="field-label">Prompt hint:</span>
+          <div class="field-input">
+            <input id="prompt" type="text" placeholder="e.g. Continue the sky and trees" />
+          </div>
+        </div>
 
-        <button id="generateButton">Generate bleed</button>
-        <p id="status" class="status" role="status"></p>
+        <div class="field-row status-row">
+          <p id="status" class="status" role="status"></p>
+          <button id="generateButton" class="button">Generate bleed</button>
+        </div>
       </section>
 
       <section class="preview">
-        <div>
+        <div class="preview-card">
           <h2>Original</h2>
           <img id="originalPreview" alt="Original upload preview" />
         </div>
-        <div>
+        <div class="preview-card">
           <h2>Generated bleed</h2>
           <img id="generatedPreview" alt="Generated bleed preview" />
           <a id="downloadLink" class="download" download="pressdrop-bleed.png">Download PNG</a>
         </div>
-      </section>
-
-      <section class="help">
-        <h2>How it works</h2>
-        <ol>
-          <li>Upload your artwork.</li>
-          <li>Gemini AI generates a larger canvas with extra bleed.</li>
-          <li>Download the expanded PNG for print-ready output.</li>
-        </ol>
       </section>
     </div>
 

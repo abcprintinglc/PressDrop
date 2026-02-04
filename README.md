@@ -13,7 +13,7 @@ A Photoshop UXP panel that extends artwork beyond the canvas edge using Gemini A
 
 1. Run `PressDrop_Run_Pro.bat` on Windows (requires Python 3.10+).
 2. A browser window opens at `http://localhost:8000/standalone/index.html`.
-3. Paste your Gemini API key, upload an image, and generate the bleed.
+3. Paste your Gemini API key (stored locally in the browser), upload a PNG/JPG, and generate the bleed.
 
 ## Photoshop UXP panel setup
 
