@@ -129,6 +129,9 @@ const fetchGeminiBleed = async ({
       const errorPayload = await response.json();
       if (errorPayload.error?.message) {
         errorMessage = `Gemini request failed: ${errorPayload.error.message}`;
+        if (errorPayload.error.message.toLowerCase().includes("quota")) {
+          errorMessage = `${errorMessage} Try switching to mirror/smear mode or pick a different Gemini model.`;
+        }
       }
     } catch (error) {
       console.warn("Failed to parse Gemini error payload", error);
