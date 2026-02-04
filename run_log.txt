@@ -2,7 +2,7 @@
 PressDrop Standalone Launcher 
 =============================== 
 Python 3.14.2
-::1 - - [03/Feb/2026 22:47:58] "GET /standalone/index.html HTTP/1.1" 304 -
-::ffff:127.0.0.1 - - [03/Feb/2026 22:47:58] "GET /standalone/styles.css HTTP/1.1" 304 -
-::ffff:127.0.0.1 - - [03/Feb/2026 22:47:58] "GET /standalone/app.js HTTP/1.1" 304 -
+::1 - - [03/Feb/2026 22:49:21] "GET /standalone/index.html HTTP/1.1" 304 -
+::ffff:127.0.0.1 - - [03/Feb/2026 22:49:21] "GET /standalone/styles.css HTTP/1.1" 304 -
+::ffff:127.0.0.1 - - [03/Feb/2026 22:49:21] "GET /standalone/app.js HTTP/1.1" 304 -
 ^C
