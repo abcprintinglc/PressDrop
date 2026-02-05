@@ -6,12 +6,15 @@ const browseButton = document.getElementById("browseButton");
 const generateButton = document.getElementById("generateButton");
 const bleedModeSelect = document.getElementById("bleedMode");
 const geminiModelSelect = document.getElementById("geminiModel");
+const dpiInput = document.getElementById("dpi");
 const statusEl = document.getElementById("status");
 const originalPreview = document.getElementById("originalPreview");
 const generatedPreview = document.getElementById("generatedPreview");
 const downloadLink = document.getElementById("downloadLink");
 const storedKey = "pressdrop.gemini.apiKey";
 const storedModelKey = "pressdrop.gemini.model";
+const storedDpiKey = "pressdrop.export.dpi";
+const baseDpi = 1200;
 
 const setStatus = (message) => {
   statusEl.textContent = message;
@@ -87,6 +90,22 @@ const loadImage = (dataUrl) =>
     image.src = dataUrl;
   });
 
+const scaleDataUrl = async ({ dataUrl, scale }) => {
+  if (!Number.isFinite(scale) || scale <= 0 || Math.abs(scale - 1) < 0.001) {
+    return dataUrl;
+  }
+
+  const image = await loadImage(dataUrl);
+  const width = Math.max(1, Math.round(image.naturalWidth * scale));
+  const height = Math.max(1, Math.round(image.naturalHeight * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  context.drawImage(image, 0, 0, width, height);
+  return canvas.toDataURL("image/png");
+};
+
 const fetchGeminiBleed = async ({
   apiKey,
   prompt,
@@ -129,8 +148,15 @@ const fetchGeminiBleed = async ({
       const errorPayload = await response.json();
       if (errorPayload.error?.message) {
         errorMessage = `Gemini request failed: ${errorPayload.error.message}`;
-        if (errorPayload.error.message.toLowerCase().includes("quota")) {
+        const lowered = errorPayload.error.message.toLowerCase();
+        if (lowered.includes("quota")) {
           errorMessage = `${errorMessage} Try switching to mirror/smear mode or pick a different Gemini model.`;
+        }
+        if (lowered.includes("overloaded")) {
+          errorMessage = `${errorMessage} Try again later, switch models, or use mirror/smear mode.`;
+        }
+        if (lowered.includes("not found")) {
+          errorMessage = `${errorMessage} Select a different Gemini model from the dropdown.`;
         }
       }
     } catch (error) {
@@ -186,6 +212,7 @@ const handleGenerate = async () => {
   const bleed = Number.parseInt(bleedSizeInput.value, 10);
   const mode = bleedModeSelect.value;
   const model = geminiModelSelect.value;
+  const dpi = Number.parseInt(dpiInput.value, 10);
   const file = imageInput.files?.[0];
 
   if (!apiKey) {
@@ -213,12 +240,18 @@ const handleGenerate = async () => {
     return;
   }
 
+  if (!Number.isFinite(dpi) || dpi <= 0) {
+    setStatus("Enter a valid DPI.");
+    return;
+  }
+
   generateButton.disabled = true;
   setStatus(mode === "ai" ? "Sending image to Gemini..." : "Generating local bleed...");
 
   try {
     localStorage.setItem(storedKey, apiKey);
     localStorage.setItem(storedModelKey, model);
+    localStorage.setItem(storedDpiKey, String(dpi));
     const dataUrl = await readFileAsDataUrl(file);
     originalPreview.src = dataUrl;
 
@@ -250,8 +283,13 @@ const handleGenerate = async () => {
       outputDataUrl = await generateLocalBleed({ dataUrl, bleed, mode });
     }
 
-    generatedPreview.src = outputDataUrl;
-    downloadLink.href = outputDataUrl;
+    const scaledOutput = await scaleDataUrl({
+      dataUrl: outputDataUrl,
+      scale: dpi / baseDpi,
+    });
+
+    generatedPreview.src = scaledOutput;
+    downloadLink.href = scaledOutput;
     downloadLink.classList.add("visible");
     setStatus("Bleed generated successfully.");
   } catch (error) {
@@ -289,5 +327,9 @@ window.addEventListener("DOMContentLoaded", () => {
   const cachedModel = localStorage.getItem(storedModelKey);
   if (cachedModel) {
     geminiModelSelect.value = cachedModel;
+  }
+  const cachedDpi = localStorage.getItem(storedDpiKey);
+  if (cachedDpi) {
+    dpiInput.value = cachedDpi;
   }
 });
